@@ -15,6 +15,10 @@ body {
   overflow: hidden;
   font-family: 'intreb', sans-serif;
   letter-spacing: 0.5px;
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* Header */
@@ -30,6 +34,9 @@ body {
   justify-content: center;
   z-index: 999;
   gap: 12px;
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  padding-top: env(safe-area-inset-top);
 }
 
 .header h1 {

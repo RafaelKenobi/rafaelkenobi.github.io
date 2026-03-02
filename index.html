@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rafael Costa Portfolio</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/x-icon" href="Assets/favicon/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="Assets/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="Assets/favicon/favicon-16x16.png">
+  <link rel="apple-touch-icon" href="Assets/favicon/apple-touch-icon.png">
+  <link rel="manifest" href="Assets/favicon/site.webmanifest">
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <button class="menu-toggle" id="menuToggle" aria-label="Menu">
+      <span class="menu-icon">☰</span>
+    </button>
+    <h1>RAFAEL  COSTA</h1>
+    
+    <!-- Menu Dropdown -->
+    <nav class="menu-dropdown" id="menuDropdown">
+      <a href="#portfolio" class="menu-item">Portfolio</a>
+      <a href="#spaceship-game" class="menu-item">Spaceship Game</a>
+      <a href="#about" class="menu-item">About</a>
+      <a href="#cv" class="menu-item">CV</a>
+      <a href="#contacts" class="menu-item">Contacts</a>
+      <a href="#interests" class="menu-item">My Interests</a>
+    </nav>
+  </header>
+
+  <!-- Portfolio Modal -->
+  <div class="portfolio-modal" id="portfolioModal">
+    <div class="portfolio-content">
+      <button class="close-btn" id="closePortfolio" aria-label="Fechar">✕</button>
+      <h2>Portfolio</h2>
+      <div class="portfolio-grid">
+        <div class="portfolio-item">
+          <h3>Projeto 1</h3>
+          <p>Descrição do seu projeto</p>
+          <a href="#" target="_blank" class="portfolio-link">Ver Trabalho →</a>
+        </div>
+        <div class="portfolio-item">
+          <h3>Projeto 2</h3>
+          <p>Descrição do seu projeto</p>
+          <a href="#" target="_blank" class="portfolio-link">Ver Trabalho →</a>
+        </div>
+        <div class="portfolio-item">
+          <h3>Projeto 3</h3>
+          <p>Descrição do seu projeto</p>
+          <a href="#" target="_blank" class="portfolio-link">Ver Trabalho →</a>
+        </div>
+        <div class="portfolio-item">
+          <h3>Projeto 4</h3>
+          <p>Descrição do seu projeto</p>
+          <a href="#" target="_blank" class="portfolio-link">Ver Trabalho →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Spaceship Game Modal -->
+  <div class="spaceship-modal" id="spaceshipModal">
+    <div class="spaceship-content">
+      <button class="close-btn" id="closeSpaceship" aria-label="Fechar">✕</button>
+      <h2>Spaceship Game</h2>
+      <div class="spaceship-grid">
+      </div>
+    </div>
+  </div>
+
+  <!-- About Modal -->
+  <div class="about-modal" id="aboutModal">
+    <div class="about-content">
+      <button class="close-btn" id="closeAbout" aria-label="Fechar">✕</button>
+      <h2>About</h2>
+      <div class="about-text">
+        <p>Adicione o seu conteúdo aqui...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CV Modal -->
+  <div class="cv-modal" id="cvModal">
+    <div class="cv-content">
+      <button class="close-btn" id="closeCV" aria-label="Fechar">✕</button>
+      <h2>CV</h2>
+      <div class="cv-text">
+        <p>Adicione o seu currículo aqui...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contacts Modal -->
+  <div class="contacts-modal" id="contactsModal">
+    <div class="contacts-content">
+      <button class="close-btn" id="closeContacts" aria-label="Fechar">✕</button>
+      <h2>Contacts</h2>
+      <div class="contacts-text">
+        <p>Adicione os seus contactos aqui...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Personal Interests Modal -->
+  <div class="interests-modal" id="interestsModal">
+    <div class="interests-content">
+      <button class="close-btn" id="closeInterests" aria-label="Fechar">✕</button>
+      <h2>My Interests</h2>
+      <div class="interests-text">
+        <p>Adicione os seus interesses aqui...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Player de Música -->
+  <div class="music-player">
+    <audio id="audioPlayer" loop></audio>
+    <button id="playPauseBtn" title="Play/Pause" aria-label="Play/Pause">
+      <span class="icon">▶️</span>
+    </button>
+    <div class="track-info">
+      <span id="trackName">Seleccione uma música</span>
+    </div>
+    <button id="nextBtn" title="Próxima" aria-label="Próxima música">
+      <span class="icon">⏭️</span>
+    </button>
+  </div>
+
+  <!-- Tooltip para planetas (linha + nome) -->
+  <div id="planetaTooltip" class="tooltip" style="display:none;"></div>
+  <!-- Linha da ponta do planeta até ao tooltip -->
+  <div id="tooltipLine" class="tooltip-line" style="display:none;"></div>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>

@@ -287,13 +287,14 @@ body {
   font-size: 0.9rem;
   border-radius: 4px;
   pointer-events: none;
-  transform: translate(40px, -100%);
+  transform: translate(-50%, -50%);
   white-space: nowrap;
   z-index: 1001;
 }
 
-/* Linha que conecta o planeta ao tooltip */
+/* Linha que conecta o planeta ao tooltip - DESATIVADO */
 .tooltip-line {
+  display: none;
   position: absolute;
   background: rgba(255, 255, 255, 0.7);
   height: 2px;

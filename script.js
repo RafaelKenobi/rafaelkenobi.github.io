@@ -52,6 +52,16 @@ let zoomTarget = null;
 let originalCameraPos = { x: 0, y: 1.6, z: 2.8 };
 let originalCameraRotation = { x: 0, y: 0, z: 0 }; // Guardar rotação inicial
 
+// Variáveis para observação aleatória de planetas
+let lastMouseMoveTime = Date.now();
+let isObservingRandomPlaneta = false;
+let randomPlanetaObserving = null;
+let observationStartTime = 0;
+let isInPauseMode = false; // Flag para indicar se está em pausa (olhando para câmera)
+const MOUSE_IDLE_TIME = 3000; // 3 segundos
+const OBSERVATION_DURATION = 4000; // 4 segundos observando planeta
+const PAUSE_DURATION = 4000; // 4 segundos em pausa olhando para câmera
+
 // Mapa de nomes visíveis para cada planeta
 const planetNameMap = {
   Cent: 'Portfolio',
@@ -59,8 +69,7 @@ const planetNameMap = {
   Uran_1: 'About',
   Fum: 'CV',
   Aros: 'Contacts',
-  Nept: 'My Interests',
-  Unic: 'Portfolio' // ajustar se necessário
+  Nept: 'My Interests'
 };
 
 // Tooltip HTML element (criado no index.html)
@@ -117,6 +126,9 @@ function updateTooltipLine(planetPos, tooltipElement, lineElement) {
 document.addEventListener('mousemove', (event) => {
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+  lastMouseMoveTime = Date.now(); // Reset do tempo de inatividade
+  isObservingRandomPlaneta = false; // Interromper observação aleatória
+  isInPauseMode = false; // Reset modo pausa
 });
 
 // Suporte a toque para mobile (atualiza as coordenadas como se fosse o rato)
@@ -125,6 +137,9 @@ document.addEventListener('touchmove', (event) => {
     const touch = event.touches[0];
     mouse.x = (touch.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(touch.clientY / window.innerHeight) * 2 + 1;
+    lastMouseMoveTime = Date.now(); // Reset do tempo de inatividade
+    isObservingRandomPlaneta = false; // Interromper observação aleatória
+    isInPauseMode = false; // Reset modo pausa
   }
 });
 
@@ -298,7 +313,7 @@ loader.load('meuAmbiente.glb', (gltf) => {
     }
     
     // Encontrar planetas
-    const planetasNomes = ['Aros', 'Cent', 'fiz_1', 'Fum', 'Nept', 'Unic', 'Uran_1'];
+    const planetasNomes = ['Aros', 'Cent', 'fiz_1', 'Fum', 'Nept', 'Uran_1'];
     if (planetasNomes.includes(child.name)) {
       planetas.push(child);
       console.log('Planeta encontrado:', child.name);
@@ -349,19 +364,82 @@ function animate() {
   }
 
   // Atualizar o tooltip HTML se existir
+  // Verificar se o menu está aberto
+  const menuDropdown = document.getElementById('menuDropdown');
+  const isMenuOpen = menuDropdown.classList.contains('active');
+  
+  // Verificar se algum modal está aberto
+  const portfolioModal = document.getElementById('portfolioModal');
+  const spaceshipModal = document.getElementById('spaceshipModal');
+  const aboutModal = document.getElementById('aboutModal');
+  const cvModal = document.getElementById('cvModal');
+  const contactsModal = document.getElementById('contactsModal');
+  const interestsModal = document.getElementById('interestsModal');
+  
+  const isAnyModalOpen = 
+    portfolioModal.classList.contains('active') ||
+    spaceshipModal.classList.contains('active') ||
+    aboutModal.classList.contains('active') ||
+    cvModal.classList.contains('active') ||
+    contactsModal.classList.contains('active') ||
+    interestsModal.classList.contains('active');
+  
   if (tooltip) {
-    if (hoveredPlaneta) {
-      const pos = toScreenPosition(hoveredPlaneta, camera);
+    // Mostrar tooltip se:
+    // 1. Tiver planeta hovereado E o menu estiver fechado E nenhum modal aberto
+    // OU
+    // 2. Estiver observando um planeta aleatório E não estiver em pausa
+    if ((hoveredPlaneta && !isMenuOpen && !isAnyModalOpen) || (isObservingRandomPlaneta && randomPlanetaObserving && !isInPauseMode)) {
+      const planetaToShow = isObservingRandomPlaneta ? randomPlanetaObserving : hoveredPlaneta;
+      const pos = toScreenPosition(planetaToShow, camera);
       tooltip.style.display = 'block';
       tooltip.style.left = `${pos.x}px`;
       tooltip.style.top = `${pos.y}px`;
-      tooltip.textContent = planetNameMap[hoveredPlaneta.name] || hoveredPlaneta.name;
+      tooltip.textContent = planetNameMap[planetaToShow.name] || planetaToShow.name;
       
-      // Atualizar a linha
-      updateTooltipLine(pos, tooltip, tooltipLine);
+      // Atualizar a linha - DESATIVADO
+      // updateTooltipLine(pos, tooltip, tooltipLine);
     } else {
       tooltip.style.display = 'none';
       tooltipLine.style.display = 'none';
+    }
+  }
+  
+  // Verificar se o mouse está inactivo por 3 segundos
+  const currentTime = Date.now();
+  const timeSinceLastMove = currentTime - lastMouseMoveTime;
+  
+  if (timeSinceLastMove > MOUSE_IDLE_TIME && !isObservingRandomPlaneta && planetas.length > 0) {
+    // Iniciar observação de um planeta aleatório
+    isObservingRandomPlaneta = true;
+    isInPauseMode = false;
+    observationStartTime = currentTime;
+    const randomIndex = Math.floor(Math.random() * planetas.length);
+    randomPlanetaObserving = planetas[randomIndex];
+  }
+  
+  // Se estiver observando um planeta aleatório, verificar ciclo de observação e pausa
+  if (isObservingRandomPlaneta) {
+    const elapsedTime = currentTime - observationStartTime;
+    
+    // Alternar entre observação e pausa a cada 4 segundos
+    const cycleTime = elapsedTime % (OBSERVATION_DURATION + PAUSE_DURATION);
+    
+    if (cycleTime < OBSERVATION_DURATION) {
+      // Fase de observação de planeta
+      isInPauseMode = false;
+    } else {
+      // Fase de pausa (olhando para câmera)
+      isInPauseMode = true;
+    }
+    
+    // Se completou um ciclo completo (observação + pausa) e está entrando num novo ciclo de observação
+    if (elapsedTime % (OBSERVATION_DURATION + PAUSE_DURATION) < 100) { // 100ms de margem para novo ciclo
+      if (cycleTime < OBSERVATION_DURATION && isInPauseMode === false) {
+        // Escolher novo planeta aleatório para próximo ciclo
+        const randomIndex = Math.floor(Math.random() * planetas.length);
+        randomPlanetaObserving = planetas[randomIndex];
+      }
     }
   }
   
@@ -370,7 +448,24 @@ function animate() {
     let targetRotX = 0;
     let targetRotY = 0;
     
-    if (hoveredPlaneta) {
+    // Se está observando um planeta aleatório E não está em pausa, olhar para esse
+    if (isObservingRandomPlaneta && randomPlanetaObserving && !isInPauseMode) {
+      const neckPos = neckBone.getWorldPosition(new THREE.Vector3());
+      const planetaPos = planetasWorldPos[randomPlanetaObserving.name];
+      
+      if (planetaPos) {
+        const direction = new THREE.Vector3();
+        direction.subVectors(planetaPos, neckPos);
+        
+        const horizontalDistance = Math.sqrt(direction.x ** 2 + direction.z ** 2);
+        targetRotY = Math.atan2(direction.x, direction.z);
+        targetRotX = -Math.atan2(direction.y, horizontalDistance);
+        
+        const maxRot = 75 * Math.PI / 180;
+        targetRotX = Math.max(-maxRot, Math.min(maxRot, targetRotX));
+        targetRotY = Math.max(-maxRot, Math.min(maxRot, targetRotY));
+      }
+    } else if (hoveredPlaneta) {
       // Virar para o planeta usando a posição atualizada
       const neckPos = neckBone.getWorldPosition(new THREE.Vector3());
       const planetaPos = planetasWorldPos[hoveredPlaneta.name];

@@ -384,6 +384,12 @@ function animate() {
     contactsModal.classList.contains('active') ||
     interestsModal.classList.contains('active');
   
+  // Se algum modal está aberto, cancelar observação aleatória
+  if (isAnyModalOpen) {
+    isObservingRandomPlaneta = false;
+    isInPauseMode = false;
+  }
+  
   if (tooltip) {
     // Mostrar tooltip se:
     // 1. Tiver planeta hovereado E o menu estiver fechado E nenhum modal aberto
@@ -409,7 +415,7 @@ function animate() {
   const currentTime = Date.now();
   const timeSinceLastMove = currentTime - lastMouseMoveTime;
   
-  if (timeSinceLastMove > MOUSE_IDLE_TIME && !isObservingRandomPlaneta && planetas.length > 0) {
+  if (timeSinceLastMove > MOUSE_IDLE_TIME && !isObservingRandomPlaneta && planetas.length > 0 && !isAnyModalOpen) {
     // Iniciar observação de um planeta aleatório
     isObservingRandomPlaneta = true;
     isInPauseMode = false;
@@ -571,6 +577,9 @@ async function loadMusicList() {
   }
 }
 
+// Variável para verificar se autoplay já foi iniciado
+let autoplayAttempted = false;
+
 // Inicializar player
 async function initMusicPlayer() {
   await loadMusicList();
@@ -581,17 +590,67 @@ async function initMusicPlayer() {
     loadTrack(currentTrackIndex);
     console.log('Player inicializado com:', musicList[currentTrackIndex]);
     
-    // Play automático
-    setTimeout(() => {
-      audio.play().catch(err => {
-        console.log('Autoplay bloqueado ou erro:', err);
-      });
-      updatePlayPauseIcon();
-    }, 500);
+    // Tentar autoplay
+    attemptAutoplay();
   } else {
     trackName.textContent = 'Nenhuma música encontrada na pasta musica/';
     console.log('Nenhuma música carregada');
   }
+}
+
+// Função para tentar autoplay com fallback
+function attemptAutoplay() {
+  if (autoplayAttempted) return;
+  
+  setTimeout(() => {
+    audio.play()
+      .then(() => {
+        console.log('Autoplay iniciado com sucesso');
+        autoplayAttempted = true;
+        updatePlayPauseIcon();
+      })
+      .catch(err => {
+        console.log('Autoplay bloqueado, aguardando interação do utilizador:', err);
+        // Retry após 2 segundos
+        setTimeout(() => {
+          if (!autoplayAttempted) {
+            audio.play()
+              .then(() => {
+                console.log('Autoplay iniciado no retry');
+                autoplayAttempted = true;
+                updatePlayPauseIcon();
+              })
+              .catch(retryErr => {
+                console.log('Autoplay ainda bloqueado, aguardando interação');
+              });
+          }
+        }, 2000);
+      });
+  }, 300);
+}
+
+// Se autoplay falhar, iniciar ao primeira interação do utilizador
+function initAutoplayOnInteraction() {
+  const startAutoplay = () => {
+    if (!autoplayAttempted) {
+      audio.play()
+        .then(() => {
+          console.log('Autoplay iniciado após interação do utilizador');
+          autoplayAttempted = true;
+          updatePlayPauseIcon();
+        })
+        .catch(err => {
+          console.log('Erro ao iniciar autoplay:', err);
+        });
+    }
+    // Remove listeners após primeira interação
+    document.removeEventListener('click', startAutoplay);
+    document.removeEventListener('touchstart', startAutoplay);
+  };
+  
+  // Esperar pela primeira interação
+  document.addEventListener('click', startAutoplay);
+  document.addEventListener('touchstart', startAutoplay);
 }
 
 // Carregar faixa
@@ -653,11 +712,44 @@ audio.addEventListener('ended', () => {
   playNext();
   setTimeout(() => audio.play(), 100);
 });
+
+// Fallback: tentar autoplay quando o áudio está pronto para tocar
+audio.addEventListener('canplay', () => {
+  if (!autoplayAttempted && audio.paused && musicList.length > 0) {
+    audio.play()
+      .then(() => {
+        console.log('Autoplay iniciado ao áudio estar pronto');
+        autoplayAttempted = true;
+        updatePlayPauseIcon();
+      })
+      .catch(err => {
+        console.log('Erro ao tentar autoplay no canplay');
+      });
+  }
+});
 playPauseBtn.addEventListener('click', togglePlayPause);
 nextBtn.addEventListener('click', playNext);
 
 // Iniciar player quando o documento carrega
-document.addEventListener('DOMContentLoaded', initMusicPlayer);
+document.addEventListener('DOMContentLoaded', () => {
+  initMusicPlayer();
+  initAutoplayOnInteraction(); // Fallback para autoplay bloqueado
+});
+
+// Fallback adicional: tentar autoplay quando a página ganha foco
+window.addEventListener('focus', () => {
+  if (!autoplayAttempted && audio.paused && musicList.length > 0) {
+    audio.play()
+      .then(() => {
+        console.log('Autoplay iniciado ao ganhar foco');
+        autoplayAttempted = true;
+        updatePlayPauseIcon();
+      })
+      .catch(err => {
+        console.log('Autoplay ainda não disponível ao ganhar foco');
+      });
+  }
+});
 
 // ============================================
 // MENU HEADER

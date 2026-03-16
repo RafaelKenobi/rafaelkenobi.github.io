@@ -354,10 +354,7 @@ function animate() {
   });
   
   // Fazer raycasting para detectar qual planeta está sob o rato
-  // MAS: não fazer raycasting se o hint message está visível
-  const isHintVisible = DOM.pressHint && DOM.pressHint.classList.contains('show');
-  
-  if (planetas.length > 0 && !isHintVisible) {
+  if (planetas.length > 0) {
     raycaster.setFromCamera(mouse, camera);
     const intersects = raycaster.intersectObjects(planetas, true);
     
@@ -370,8 +367,6 @@ function animate() {
     } else {
       hoveredPlaneta = null;
     }
-  } else {
-    hoveredPlaneta = null;
   }
 
   // Atualizar o tooltip HTML se existir

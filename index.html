@@ -36,7 +36,7 @@
     <!-- Menu Dropdown -->
     <nav class="menu-dropdown" id="menuDropdown">
       <a href="#portfolio" class="menu-item">Portfolio</a>
-      <a href="#spaceship-game" class="menu-item">Spaceship Game</a>
+      <a href="#disasterpiece" class="menu-item">Disasterpiece</a>
       <a href="#about" class="menu-item">About</a>
       <a href="#cv" class="menu-item">CV</a>
       <a href="#contacts" class="menu-item">Contacts</a>
@@ -82,12 +82,13 @@
     </div>
   </div>
 
-  <!-- Spaceship Game Modal -->
-  <div class="spaceship-modal" id="spaceshipModal">
-    <div class="spaceship-content">
-      <button class="close-btn" id="closeSpaceship" aria-label="Fechar">✕</button>
-      <h2>Spaceship Game</h2>
-      <div class="spaceship-grid">
+  <!-- Disasterpiece Modal -->
+  <div class="disasterpiece-modal" id="disasterpieceModal">
+    <div class="disasterpiece-content">
+      <button class="close-btn" id="closeDisasterpiece" aria-label="Fechar">✕</button>
+      <h2>Disasterpiece</h2>
+      <div class="disasterpiece-text">
+        <p>Adicione o conteúdo do Disasterpiece aqui...</p>
       </div>
     </div>
   </div>
@@ -107,9 +108,130 @@
   <div class="cv-modal" id="cvModal">
     <div class="cv-content">
       <button class="close-btn" id="closeCV" aria-label="Fechar">✕</button>
-      <h2>CV</h2>
-      <div class="cv-text">
-        <p>Adicione o seu currículo aqui...</p>
+      <div class="cv-text" id="cvContent">
+        
+        <!-- Header -->
+        <div class="cv-header">
+          <h1>Rafael Costa</h1>
+          <img src="Assets/imagens/3.jpg" alt="Rafael Costa" class="cv-header-img">
+        </div>
+
+        <!-- Projects Section -->
+        <section class="cv-section">
+          <h2 class="cv-section-title">Projects</h2>
+          
+          <div class="cv-projects">
+            <!-- Portfolio Project -->
+            <div class="cv-project">
+              <div class="cv-project-header">
+                <h3>Portfolio</h3>
+              </div>
+              <img src="Assets/imagens/1.png" alt="Portfolio Project" class="cv-project-img">
+              <div class="cv-project-info">
+                <ul>
+                  <li><span class="cv-number">3</span>D modeling</li>
+                  <li>Character rigging</li>
+                  <li>Animation</li>
+                  <li>Visual consistency</li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Disasterpiece Project -->
+            <div class="cv-project">
+              <div class="cv-project-header">
+                <h3>Disasterpiece</h3>
+              </div>
+              <img src="Assets/imagens/2.png" alt="Disasterpiece Project" class="cv-project-img">
+              <div class="cv-project-info">
+                <ul>
+                  <li><span class="cv-number">3</span>D modeling</li>
+                  <li>Modular assets</li>
+                  <li>Character rigging</li>
+                  <li>Animation</li>
+                  <li>Visual consistency</li>
+                  <li>Creating scenarios</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section class="cv-section">
+          <h2 class="cv-section-title">Skills</h2>
+          
+          <div class="cv-skills-grid">
+            <!-- Row 1 -->
+            <div class="cv-skill"><span class="cv-number">3</span>D modeling</div>
+            <div class="cv-skill">Modular assets</div>
+            <div class="cv-skill">Rigging</div>
+            <div class="cv-skill">Camera settings</div>
+            
+            <!-- Row 2 -->
+            <div class="cv-skill">Retopology</div>
+            <div class="cv-skill">UV unwrapping</div>
+            <div class="cv-skill">Photogrammetry</div>
+            <div class="cv-skill">Blocking</div>
+            
+            <!-- Row 3 -->
+            <div class="cv-skill">Blender</div>
+            <div class="cv-skill">Git</div>
+            <div class="cv-skill">Illustrator</div>
+            <div class="cv-skill">Reaper</div>
+            
+            <!-- Row 4 -->
+            <div class="cv-skill">FL Studio</div>
+            <div class="cv-skill">Fmod</div>
+            <div class="cv-skill">Unreal Engine</div>
+            <div class="cv-skill">Unity Engine</div>
+          </div>
+        </section>
+
+        <!-- Studies Section -->
+        <section class="cv-section">
+          <h2 class="cv-section-title">Studies</h2>
+          
+          <div class="cv-entry">
+            <h3>Lusófona University</h3>
+            <p class="cv-subtitle">Video games and multimedia applications</p>
+          </div>
+
+          <div class="cv-entry">
+            <h3>IEFP - <span class="cv-number">2019</span></h3>
+            <p class="cv-subtitle">Computer Repair Technician</p>
+          </div>
+
+          <div class="cv-entry">
+            <h3>IPTA, Porto - <span class="cv-number">2014</span></h3>
+            <p class="cv-subtitle">Sound design technician</p>
+          </div>
+        </section>
+
+        <!-- Work Section -->
+        <section class="cv-section">
+          <h2 class="cv-section-title">Work</h2>
+          
+          <div class="cv-entry">
+            <h3>Seller</h3>
+            <p class="cv-subtitle">Worten Sonae</p>
+            <ul>
+              <li>Logistics</li>
+              <li>Sales</li>
+            </ul>
+          </div>
+
+          <div class="cv-entry">
+            <h3>Brand Representative</h3>
+            <p class="cv-subtitle">Oppo</p>
+            <ul>
+              <li>Build brand awareness</li>
+              <li>Sales</li>
+              <li>Communication</li>
+            </ul>
+          </div>
+        </section>
+
       </div>
     </div>
   </div>

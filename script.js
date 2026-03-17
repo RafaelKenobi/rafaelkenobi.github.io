@@ -62,7 +62,7 @@ let originalCameraRotation = { x: 0, y: 0, z: 0 }; // Guardar rotação inicial
 // Mapa de nomes visíveis para cada planeta
 const planetNameMap = {
   Cent: 'Portfolio',
-  fiz_1: 'Spaceship Game',
+  fiz_1: 'Disasterpiece',
   Uran_1: 'About',
   Fum: 'CV',
   Aros: 'Contacts',
@@ -96,7 +96,7 @@ const DOM = {
   trackName: document.getElementById('trackName'),
   modals: {
     portfolio: document.getElementById('portfolioModal'),
-    spaceship: document.getElementById('spaceshipModal'),
+    disasterpiece: document.getElementById('disasterpieceModal'),
     about: document.getElementById('aboutModal'),
     cv: document.getElementById('cvModal'),
     contacts: document.getElementById('contactsModal'),
@@ -104,7 +104,7 @@ const DOM = {
   },
   closeButtons: {
     portfolio: document.getElementById('closePortfolio'),
-    spaceship: document.getElementById('closeSpaceship'),
+    disasterpiece: document.getElementById('closeDisasterpiece'),
     about: document.getElementById('closeAbout'),
     cv: document.getElementById('closeCV'),
     contacts: document.getElementById('closeContacts'),
@@ -112,7 +112,7 @@ const DOM = {
   },
   links: {
     portfolio: document.querySelector('a[href="#portfolio"]'),
-    spaceship: document.querySelector('a[href="#spaceship-game"]'),
+    disasterpiece: document.querySelector('a[href="#disasterpiece"]'),
     about: document.querySelector('a[href="#about"]'),
     cv: document.querySelector('a[href="#cv"]'),
     contacts: document.querySelector('a[href="#contacts"]'),
@@ -169,7 +169,7 @@ document.addEventListener('click', (event) => {
   if (isZooming) return;
   
   // Ignorar clicks em elementos UI
-  if (event.target.closest('.header') || event.target.closest('.music-player') || event.target.closest('.portfolio-modal') || event.target.closest('.spaceship-modal') || event.target.closest('.about-modal') || event.target.closest('.cv-modal') || event.target.closest('.contacts-modal') || event.target.closest('.interests-modal')) return;
+  if (event.target.closest('.header') || event.target.closest('.music-player') || event.target.closest('.portfolio-modal') || event.target.closest('.disasterpiece-modal') || event.target.closest('.about-modal') || event.target.closest('.cv-modal') || event.target.closest('.contacts-modal') || event.target.closest('.interests-modal')) return;
   
   raycaster.setFromCamera(mouse, camera);
   const intersects = raycaster.intersectObjects(planetas, true);
@@ -187,25 +187,18 @@ document.addEventListener('click', (event) => {
     }
     
     if (clickedPlaneta) {
-      const portfolioModal = document.getElementById('portfolioModal');
-      const spaceshipModal = document.getElementById('spaceshipModal');
-      const aboutModal = document.getElementById('aboutModal');
-      const cvModal = document.getElementById('cvModal');
-      const contactsModal = document.getElementById('contactsModal');
-      const interestsModal = document.getElementById('interestsModal');
-      
       if (clickedPlaneta.name === 'Cent') {
-        zoomToPlaneta(clickedPlaneta, portfolioModal);
+        zoomToPlaneta(clickedPlaneta, DOM.modals.portfolio);
       } else if (clickedPlaneta.name === 'fiz_1') {
-        zoomToPlaneta(clickedPlaneta, spaceshipModal);
+        zoomToPlaneta(clickedPlaneta, DOM.modals.disasterpiece);
       } else if (clickedPlaneta.name === 'Uran_1') {
-        zoomToPlaneta(clickedPlaneta, aboutModal);
+        zoomToPlaneta(clickedPlaneta, DOM.modals.about);
       } else if (clickedPlaneta.name === 'Fum') {
-        zoomToPlaneta(clickedPlaneta, cvModal);
+        zoomToPlaneta(clickedPlaneta, DOM.modals.cv);
       } else if (clickedPlaneta.name === 'Aros') {
-        zoomToPlaneta(clickedPlaneta, contactsModal);
+        zoomToPlaneta(clickedPlaneta, DOM.modals.contacts);
       } else if (clickedPlaneta.name === 'Nept') {
-        zoomToPlaneta(clickedPlaneta, interestsModal);
+        zoomToPlaneta(clickedPlaneta, DOM.modals.interests);
       }
     }
   }
@@ -674,27 +667,27 @@ DOM.closeButtons.portfolio.addEventListener('click', () => {
 });
 
 // ============================================
-// SPACESHIP GAME MODAL
+// DISASTERPIECE MODAL
 // ============================================
 
-// Abrir spaceship game ao clicar no link
-DOM.links.spaceship.addEventListener('click', (event) => {
+// Abrir disasterpiece ao clicar no link
+DOM.links.disasterpiece.addEventListener('click', (event) => {
   event.preventDefault();
   
   // Encontrar o planeta "fiz_1"
   const fiz1Planeta = planetas.find(p => p.name === 'fiz_1');
   if (fiz1Planeta) {
-    zoomToPlaneta(fiz1Planeta, DOM.modals.spaceship);
+    zoomToPlaneta(fiz1Planeta, DOM.modals.disasterpiece);
   } else {
     // Se não encontrar, apenas abrir o modal
-    DOM.modals.spaceship.classList.add('active');
+    DOM.modals.disasterpiece.classList.add('active');
     DOM.menuDropdown.classList.remove('active');
   }
 });
 
-// Fechar spaceship game ao clicar no botão X
-DOM.closeButtons.spaceship.addEventListener('click', () => {
-  DOM.modals.spaceship.classList.remove('active');
+// Fechar disasterpiece ao clicar no botão X
+DOM.closeButtons.disasterpiece.addEventListener('click', () => {
+  DOM.modals.disasterpiece.classList.remove('active');
   resetCamera();
 });
 

@@ -81,6 +81,7 @@ const CONFIG = {
 // Estado
 let hasUserInteracted = false;
 let hintTimeout = null;
+let hasMouseMoved = false; // Flag para só fazer raycasting após movimento de rato
 
 // Elementos DOM cacheados
 const DOM = {
@@ -137,12 +138,14 @@ function toScreenPosition(obj, camera) {
 
 // Listener do rato - movimento
 document.addEventListener('mousemove', (event) => {
+  hasMouseMoved = true;
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 });
 
 // Suporte a toque para mobile (atualiza as coordenadas como se fosse o rato)
 document.addEventListener('touchmove', (event) => {
+  hasMouseMoved = true;
   if (event.touches && event.touches[0]) {
     const touch = event.touches[0];
     mouse.x = (touch.clientX / window.innerWidth) * 2 - 1;
@@ -152,6 +155,7 @@ document.addEventListener('touchmove', (event) => {
 
 // opcional: também atualiza no touchstart para mostrar tooltip imediatamente
 document.addEventListener('touchstart', (event) => {
+  hasMouseMoved = true;
   if (event.touches && event.touches[0]) {
     const touch = event.touches[0];
     mouse.x = (touch.clientX / window.innerWidth) * 2 - 1;
@@ -354,7 +358,7 @@ function animate() {
   });
   
   // Fazer raycasting para detectar qual planeta está sob o rato
-  if (planetas.length > 0) {
+  if (planetas.length > 0 && hasMouseMoved) {
     raycaster.setFromCamera(mouse, camera);
     const intersects = raycaster.intersectObjects(planetas, true);
     

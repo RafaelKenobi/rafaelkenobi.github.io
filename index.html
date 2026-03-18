@@ -233,9 +233,24 @@
   <div class="contacts-modal" id="contactsModal">
     <div class="contacts-content">
       <button class="close-btn" id="closeContacts" aria-label="Fechar">✕</button>
-      <h2>Contacts</h2>
       <div class="contacts-text">
-        <p>Adicione os seus contactos aqui...</p>
+        <h2 class="contacts-title">Feel free to contact me.</h2>
+        <form class="contact-form" action="https://formsubmit.co/rafael94pessoa@gmail.com" method="POST" target="_blank">
+          <!-- Email do remetente -->
+          <input type="email" name="email" placeholder="YOUR EMAIL" required class="form-input">
+          
+          <!-- Assunto -->
+          <input type="text" name="subject" placeholder="SUBJECT" required class="form-input">
+          
+          <!-- Mensagem -->
+          <textarea name="message" placeholder="YOUR MESSAGE" required class="form-textarea"></textarea>
+          
+          <!-- Bot redirect (opcional) -->
+          <input type="hidden" name="_next" value="javascript:history.back()">
+          
+          <!-- Botão Send -->
+          <button type="submit" class="form-submit-btn">SEND</button>
+        </form>
       </div>
     </div>
   </div>

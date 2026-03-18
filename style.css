@@ -542,6 +542,83 @@ body {
   margin-bottom: 15px;
 }
 
+/* Contact Form Styles */
+.contacts-title {
+  font-size: 28px;
+  color: #ffffff;
+  margin-bottom: 40px;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  line-height: 1.6;
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.form-input,
+.form-textarea {
+  background: #1a1a1a;
+  border: 1px solid #333333;
+  color: #ffffff;
+  padding: 15px;
+  font-family: 'HeadingNow', sans-serif;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: #666666;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: #ffbd46;
+  background: #0d0d0d;
+  box-shadow: 0 0 10px rgba(255, 189, 70, 0.3);
+}
+
+.form-textarea {
+  min-height: 150px;
+  resize: vertical;
+}
+
+.form-submit-btn {
+  background: #ffbd46;
+  color: #000000;
+  border: 2px solid #ffbd46;
+  padding: 14px 40px;
+  font-size: 14px;
+  font-weight: bold;
+  font-family: 'HeadingNow', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+
+.form-submit-btn:hover {
+  background: transparent;
+  color: #ffbd46;
+  border-color: #ffbd46;
+}
+
+.form-submit-btn:active {
+  transform: scale(0.98);
+}
+
 /* ============================================
    CV SPECIFIC STYLES
    ============================================ */

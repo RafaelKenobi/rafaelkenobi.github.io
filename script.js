@@ -529,7 +529,7 @@ function loadTrack(index) {
     .pop()
     .replace(/\.[^/.]+$/, ''); // Remove extensão
   
-  DOM.trackName.textContent = '♫ ' + trackNameDisplay;
+  DOM.trackName.textContent = '' + trackNameDisplay;
   updatePlayPauseIcon();
 }
 

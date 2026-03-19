@@ -24,7 +24,11 @@
     }
   }
   </script>
-</head>
+  <!-- EmailJS -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/index.min.js"></script>
+  <script type="text/javascript">
+    emailjs.init('TCEWtIEZzqUuQiQ_A');
+  </script>
 <body>
   <!-- Header -->
   <header class="header">
@@ -112,7 +116,7 @@
         
         <!-- Header -->
         <div class="cv-header">
-          <a href="Assets/cv pdf/Currículo Rafael 2026.pdf" download class="cv-download-btn">📥 DOWNLOAD CV</a>
+          <a href="Assets/cv pdf/Currículo Rafael 2026.pdf" download class="cv-download-btn">DOWNLOAD CV</a>
           <h1>RAFAEL COSTA</h1>
           <img src="Assets/imagens/3.jpg" alt="Rafael Costa" class="cv-header-img">
           <div class="cv-header-languages">
@@ -235,18 +239,15 @@
       <button class="close-btn" id="closeContacts" aria-label="Fechar">✕</button>
       <div class="contacts-text">
         <h2 class="contacts-title">Feel free to contact me.</h2>
-        <form class="contact-form" action="https://formsubmit.co/rafael94pessoal@gmail.com" method="POST" target="_blank">
+        <form class="contact-form" id="contactForm">
           <!-- Email do remetente -->
-          <input type="email" name="email" placeholder="YOUR EMAIL" required class="form-input">
+          <input type="email" id="visitor_email" placeholder="YOUR EMAIL" required class="form-input">
           
           <!-- Assunto -->
-          <input type="text" name="subject" placeholder="SUBJECT" required class="form-input">
+          <input type="text" id="subject" placeholder="SUBJECT" required class="form-input">
           
           <!-- Mensagem -->
-          <textarea name="message" placeholder="YOUR MESSAGE" required class="form-textarea"></textarea>
-          
-          <!-- Bot redirect (opcional) -->
-          <input type="hidden" name="_next" value="javascript:history.back()">
+          <textarea id="message" placeholder="YOUR MESSAGE" required class="form-textarea"></textarea>
           
           <!-- Botão Send -->
           <button type="submit" class="form-submit-btn">SEND</button>

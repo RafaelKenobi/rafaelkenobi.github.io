@@ -424,9 +424,33 @@ window.addEventListener('resize', () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-// ============================================
-// PLAYER DE MÚSICA
-// ============================================
+// Enviar email via EmailJS
+const contactForm = document.getElementById('contactForm');
+if (contactForm) {
+  contactForm.addEventListener('submit', function(event) {
+    event.preventDefault();
+    
+    const visitorEmail = document.getElementById('visitor_email').value;
+    const subject = document.getElementById('subject').value;
+    const message = document.getElementById('message').value;
+    
+    // Enviar email usando EmailJS
+    emailjs.send('service_4a0kqfj', 'template_v4tsvqo', {
+      visitor_email: visitorEmail,
+      subject: subject,
+      message: message,
+      to_email: 'kan_sk8r@hotmail.com'
+    }).then(function(response) {
+      alert('✅ Email sent successfully!');
+      contactForm.reset();
+    }, function(error) {
+      alert('❌ Failed to send email. Please try again.');
+      console.log('FAILED...', error);
+    });
+  });
+}
+
+// Animações
 
 let musicList = [];
 let currentTrackIndex = 0;

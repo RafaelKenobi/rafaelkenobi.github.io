@@ -24,15 +24,6 @@
     }
   }
   </script>
-  <!-- EmailJS - LOAD FIRST WITH DEFER -->
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/index.min.js" defer></script>
-  <script type="text/javascript" defer>
-    document.addEventListener('DOMContentLoaded', function() {
-      if (typeof emailjs !== 'undefined') {
-        emailjs.init('TCEWtIEZzqUuQiQ_A');
-      }
-    });
-  </script>
 </head>
 <body>
   <!-- Header -->
@@ -118,7 +109,7 @@
       <button class="close-btn" id="closeDisasterpiece" aria-label="Fechar">✕</button>
       <h2>Disasterpiece</h2>
       <div class="disasterpiece-text">
-        <p>DisasterPiece is under maintenance. We are preparing this space for you.</p>
+        <p>Coming soon...</p>
       </div>
     </div>
   </div>
@@ -129,7 +120,7 @@
       <button class="close-btn" id="closeAbout" aria-label="Fechar">✕</button>
       <h2>About</h2>
       <div class="about-text">
-        <p>About is under maintenance. We are preparing this space for you.</p>
+        <p>Coming soon...</p>
       </div>
     </div>
   </div>
@@ -263,21 +254,9 @@
   <div class="contacts-modal" id="contactsModal">
     <div class="contacts-content">
       <button class="close-btn" id="closeContacts" aria-label="Fechar">✕</button>
+      <h2>Contacts</h2>
       <div class="contacts-text">
-        <h2 class="contacts-title">Feel free to contact me.</h2>
-        <form class="contact-form" id="contactForm">
-          <!-- Email do remetente -->
-          <input type="email" id="visitor_email" placeholder="YOUR EMAIL" required class="form-input">
-          
-          <!-- Assunto -->
-          <input type="text" id="subject" placeholder="SUBJECT" required class="form-input">
-          
-          <!-- Mensagem -->
-          <textarea id="message" placeholder="YOUR MESSAGE" required class="form-textarea"></textarea>
-          
-          <!-- Botão Send -->
-          <button type="submit" class="form-submit-btn">SEND</button>
-        </form>
+        <p>Coming soon...</p>
       </div>
     </div>
   </div>
@@ -288,7 +267,7 @@
       <button class="close-btn" id="closeInterests" aria-label="Fechar">✕</button>
       <h2>My Interests</h2>
       <div class="interests-text">
-        <p>Interests Under maintenance. We are preparing this space for you.</p>
+        <p>Coming soon...</p>
       </div>
     </div>
   </div>
@@ -307,10 +286,8 @@
     </button>
   </div>
 
-  <!-- Tooltip para planetas (linha + nome) -->
-  <div id="planetaTooltip" class="tooltip" style="display:none;"></div>
-  <!-- Linha da ponta do planeta até ao tooltip -->
-  <div id="tooltipLine" class="tooltip-line" style="display:none;"></div>
+  <!-- Tooltip para planetas -->
+  <div id="planetaTooltip" class="tooltip"></div>
 
   <!-- Mensagem "Press any planet" -->
   <div id="pressHint" class="press-hint">

@@ -50,10 +50,7 @@ const clock = new THREE.Clock();
 
 // Posição do rato e controles
 const mouse = { x: 0, y: 0 };
-let neckBone = null;
 let planetas = [];
-let planetasWorldPos = {}; // Para armazenar posições do mundo dos planetas
-let hoveredPlaneta = null;
 let isZooming = false;
 let zoomTarget = null;
 let originalCameraPos = { x: 0, y: 1.6, z: 2.8 };
@@ -86,7 +83,6 @@ let hasMouseMoved = false; // Flag para só fazer raycasting após movimento de 
 // Elementos DOM cacheados
 const DOM = {
   tooltip: document.getElementById('planetaTooltip'),
-  tooltipLine: document.getElementById('tooltipLine'),
   pressHint: document.getElementById('pressHint'),
   menuDropdown: document.getElementById('menuDropdown'),
   menuToggle: document.getElementById('menuToggle'),
@@ -314,14 +310,8 @@ loader.load('meuAmbiente.glb', (gltf) => {
   const model = gltf.scene;
   scene.add(model);
   
-  // Encontrar o Neck e os planetas
+  // Encontrar os planetas
   model.traverse((child) => {
-    // Encontrar Neck
-    if (child.name === 'Neck' || child.name === 'neck') {
-      neckBone = child;
-    }
-    
-    // Encontrar planetas
     const planetasNomes = ['Aros', 'Cent', 'fiz_1', 'Fum', 'Nept', 'Uran_1'];
     if (planetasNomes.includes(child.name)) {
       planetas.push(child);
@@ -345,11 +335,6 @@ function animate() {
     mixer.update(clock.getDelta());
   }
   
-  // Atualizar posições dos planetas em tempo real (para seguir as animações)
-  planetas.forEach((planeta) => {
-    planetasWorldPos[planeta.name] = planeta.getWorldPosition(new THREE.Vector3());
-  });
-  
   // Fazer raycasting para detectar qual planeta está sob o rato
   if (planetas.length > 0 && hasMouseMoved) {
     raycaster.setFromCamera(mouse, camera);
@@ -357,36 +342,30 @@ function animate() {
     
     if (intersects.length > 0) {
       // Encontra qual planeta foi intersectado
-      hoveredPlaneta = intersects[0].object;
+      let hoveredPlaneta = intersects[0].object;
       while (hoveredPlaneta && !planetas.includes(hoveredPlaneta)) {
         hoveredPlaneta = hoveredPlaneta.parent;
       }
+      
+      // Atualizar o tooltip HTML
+      const isMenuOpen = DOM.menuDropdown.classList.contains('active');
+      const modals = Object.values(DOM.modals);
+      const isAnyModalOpen = modals.some(m => m && m.classList.contains('active'));
+      
+      if (DOM.tooltip && hoveredPlaneta && !isMenuOpen && !isAnyModalOpen) {
+        const pos = toScreenPosition(hoveredPlaneta, camera);
+        DOM.tooltip.style.display = 'block';
+        DOM.tooltip.classList.add('visible');
+        DOM.tooltip.style.left = `${pos.x}px`;
+        DOM.tooltip.style.top = `${pos.y}px`;
+        DOM.tooltip.textContent = planetNameMap[hoveredPlaneta.name] || hoveredPlaneta.name;
+      } else if (DOM.tooltip) {
+        DOM.tooltip.classList.remove('visible');
+      }
     } else {
-      hoveredPlaneta = null;
-    }
-  }
-
-  // Atualizar o tooltip HTML se existir
-  // Verificar se o menu está aberto
-  const isMenuOpen = DOM.menuDropdown.classList.contains('active');
-  
-  // Verificar se algum modal está aberto - usando função helper
-  const modals = Object.values(DOM.modals);
-  const isAnyModalOpen = modals.some(m => m && m.classList.contains('active'));
-  
-  if (DOM.tooltip) {
-    // Mostrar tooltip se:
-    // Tiver planeta hovereado E o menu estiver fechado E nenhum modal aberto
-    if (hoveredPlaneta && !isMenuOpen && !isAnyModalOpen) {
-      const pos = toScreenPosition(hoveredPlaneta, camera);
-      DOM.tooltip.style.display = 'block';
-      DOM.tooltip.classList.add('visible');
-      DOM.tooltip.style.left = `${pos.x}px`;
-      DOM.tooltip.style.top = `${pos.y}px`;
-      DOM.tooltip.textContent = planetNameMap[hoveredPlaneta.name] || hoveredPlaneta.name;
-    } else {
-      DOM.tooltip.classList.remove('visible');
-      DOM.tooltipLine.style.display = 'none';
+      if (DOM.tooltip) {
+        DOM.tooltip.classList.remove('visible');
+      }
     }
   }
   
@@ -424,58 +403,6 @@ window.addEventListener('resize', () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-// Enviar email via EmailJS
-// Aguarda o DOM estar pronto e EmailJS estar disponível
-function initContactForm() {
-  const contactForm = document.getElementById('contactForm');
-  console.log('ContactForm found:', contactForm);
-  console.log('EmailJS available:', typeof emailjs !== 'undefined');
-
-  if (contactForm) {
-    contactForm.addEventListener('submit', function(event) {
-      event.preventDefault();
-      
-      if (typeof emailjs === 'undefined') {
-        alert('❌ EmailJS is not loaded. Please refresh the page.');
-        console.error('EmailJS not available');
-        return;
-      }
-      
-      console.log('Form submitted!');
-      
-      const visitorEmail = document.getElementById('visitor_email').value;
-      const subject = document.getElementById('subject').value;
-      const message = document.getElementById('message').value;
-      
-      console.log('Form data:', { visitorEmail, subject, message });
-      console.log('Sending email via EmailJS...');
-      
-      emailjs.send('service_4a0kqfj', 'template_v4tsvqo', {
-        visitor_email: visitorEmail,
-        subject: subject,
-        message: message,
-        to_email: 'kan_sk8r@hotmail.com'
-      }).then(function(response) {
-        console.log('✅ Email sent! Response:', response);
-        alert('✅ Email sent successfully!');
-        contactForm.reset();
-      }, function(error) {
-        console.log('❌ FAILED... Error:', error);
-        alert('❌ Failed to send email. Please try again.\nError: ' + (error.text || error.message || JSON.stringify(error)));
-      });
-    });
-  } else {
-    console.error('ContactForm element not found!');
-  }
-}
-
-// Inicializa quando o DOM está pronto
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initContactForm);
-} else {
-  initContactForm();
-}
-
 // Animações
 
 let musicList = [];
@@ -505,66 +432,40 @@ async function initMusicPlayer() {
   await loadMusicList();
   
   if (musicList.length > 0) {
-    // Começar com uma música aleatória
     currentTrackIndex = Math.floor(Math.random() * musicList.length);
     loadTrack(currentTrackIndex);
-    
-    // Tentar autoplay
     attemptAutoplay();
   } else {
     DOM.trackName.textContent = 'Nenhuma música encontrada na pasta musica/';
   }
 }
 
-// Função para tentar autoplay com fallback
+// Função para tentar autoplay
 function attemptAutoplay() {
   if (autoplayAttempted) return;
   
-  setTimeout(() => {
+  DOM.audio.play()
+    .then(() => {
+      autoplayAttempted = true;
+      updatePlayPauseIcon();
+    })
+    .catch(() => {
+      // Autoplay bloqueado - aguardar primeira interação
+      document.addEventListener('click', resumeAudio, { once: true });
+      document.addEventListener('touchstart', resumeAudio, { once: true });
+    });
+}
+
+// Tentar play quando utilizador interage
+function resumeAudio() {
+  if (!autoplayAttempted) {
     DOM.audio.play()
       .then(() => {
         autoplayAttempted = true;
         updatePlayPauseIcon();
       })
-      .catch(err => {
-        // Retry após 2 segundos
-        setTimeout(() => {
-          if (!autoplayAttempted) {
-            DOM.audio.play()
-              .then(() => {
-                autoplayAttempted = true;
-                updatePlayPauseIcon();
-              })
-              .catch(retryErr => {
-                // Erro silencioso
-              });
-          }
-        }, 2000);
-      });
-  }, 300);
-}
-
-// Se autoplay falhar, iniciar ao primeira interação do utilizador
-function initAutoplayOnInteraction() {
-  const startAutoplay = () => {
-    if (!autoplayAttempted) {
-      DOM.audio.play()
-        .then(() => {
-          autoplayAttempted = true;
-          updatePlayPauseIcon();
-        })
-        .catch(err => {
-          // Erro silencioso
-        });
-    }
-    // Remove listeners após primeira interação
-    document.removeEventListener('click', startAutoplay);
-    document.removeEventListener('touchstart', startAutoplay);
-  };
-  
-  // Esperar pela primeira interação
-  document.addEventListener('click', startAutoplay);
-  document.addEventListener('touchstart', startAutoplay);
+      .catch(() => {});
+  }
 }
 
 // Carregar faixa
@@ -605,9 +506,17 @@ function playNext() {
   currentTrackIndex = (currentTrackIndex + 1) % musicList.length;
   loadTrack(currentTrackIndex);
   
-  if (isPlaying) {
-    DOM.audio.play();
-  }
+  // Sempre tocar a próxima música
+  DOM.audio.play()
+    .then(() => {
+      isPlaying = true;
+      updatePlayPauseIcon();
+    })
+    .catch(() => {
+      // Se falhar, aguardar primeira interação
+      document.addEventListener('click', resumeAudio, { once: true });
+      document.addEventListener('touchstart', resumeAudio, { once: true });
+    });
 }
 
 // Atualizar ícone play/pause
@@ -627,40 +536,12 @@ DOM.audio.addEventListener('ended', () => {
   setTimeout(() => DOM.audio.play(), 100);
 });
 
-// Fallback: tentar autoplay quando o áudio está pronto para tocar
-DOM.audio.addEventListener('canplay', () => {
-  if (!autoplayAttempted && DOM.audio.paused && musicList.length > 0) {
-    DOM.audio.play()
-      .then(() => {
-        autoplayAttempted = true;
-        updatePlayPauseIcon();
-      })
-      .catch(err => {
-        // Erro silencioso
-      });
-  }
-});
 DOM.playPauseBtn.addEventListener('click', togglePlayPause);
 DOM.nextBtn.addEventListener('click', playNext);
 
 // Iniciar player quando o documento carrega
 document.addEventListener('DOMContentLoaded', () => {
   initMusicPlayer();
-  initAutoplayOnInteraction(); // Fallback para autoplay bloqueado
-});
-
-// Fallback adicional: tentar autoplay quando a página ganha foco
-window.addEventListener('focus', () => {
-  if (!autoplayAttempted && DOM.audio.paused && musicList.length > 0) {
-    DOM.audio.play()
-      .then(() => {
-        autoplayAttempted = true;
-        updatePlayPauseIcon();
-      })
-      .catch(err => {
-        // Erro silencioso
-      });
-  }
 });
 
 // ============================================

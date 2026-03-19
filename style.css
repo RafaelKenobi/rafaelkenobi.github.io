@@ -206,20 +206,6 @@ body {
   line-height: 1.5;
 }
 
-.portfolio-link {
-  color: #ffbd46;
-  text-decoration: none;
-  display: inline-block;
-  padding: 8px 15px;
-  border: 1px solid #ffbd46;
-  transition: all 0.3s ease;
-}
-
-.portfolio-link:hover {
-  background: #ffbd46;
-  color: #000000;
-}
-
 /* Responsivo mobile */
 @media (max-width: 768px) {
   .portfolio-modal {
@@ -330,17 +316,6 @@ body {
   opacity: 1;
 }
 
-/* Linha que conecta o planeta ao tooltip - DESATIVADO */
-.tooltip-line {
-  display: none;
-  position: absolute;
-  background: rgba(255, 255, 255, 0.7);
-  height: 2px;
-  transform-origin: left center;
-  pointer-events: none;
-  z-index: 1000;
-}
-
 /* Press Hint Message */
 .press-hint {
   position: fixed;
@@ -411,80 +386,17 @@ body {
   text-align: center;
 }
 
-.disasterpiece-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  margin-top: 20px;
-}
-
-.disasterpiece-item {
-  background: #111111;
-  border: 2px solid #ffffff;
-  padding: 20px;
-  border-radius: 0;
-  transition: all 0.3s ease;
-}
-
-.disasterpiece-item:hover {
-  background: #1a1a1a;
-  transform: translateY(-5px);
-}
-
-.disasterpiece-item h3 {
-  color: #ffffff;
-  font-size: 18px;
-  margin-bottom: 10px;
-}
-
-.disasterpiece-item p {
+.disasterpiece-text {
   color: #cccccc;
-  font-size: 14px;
-  margin-bottom: 15px;
-  line-height: 1.5;
-}
-
-.disasterpiece-link {
-  color: #ffffff;
-  text-decoration: none;
-  display: inline-block;
-  padding: 8px 15px;
-  border: 1px solid #ffffff;
-  transition: all 0.3s ease;
-}
-
-.disasterpiece-link:hover {
-  background: #ffffff;
-  color: #000000;
-}
-
-/* Responsivo mobile */
-@media (max-width: 768px) {
-  .disasterpiece-modal {
-    padding: 60px 15px 40px 15px;
-  }
-
-  .disasterpiece-content h2 {
-    font-size: 24px;
-    margin-bottom: 20px;
-  }
-
-  .disasterpiece-grid {
-    grid-template-columns: 1fr;
-    gap: 15px;
-  }
-
-  .disasterpiece-item {
-    padding: 15px;
-  }
-
-  .disasterpiece-item h3 {
-    font-size: 16px;
-  }
-
-  .disasterpiece-item p {
-    font-size: 13px;
-  }
+  font-size: 16px;
+  line-height: 1.8;
+  background: #000000;
+  border: 2px solid #ffffff;
+  padding: 30px;
+  border-radius: 4px;
+  max-height: calc(100vh - 180px);
+  overflow-y: auto;
+  scroll-behavior: smooth;
 }
 
 /* About, CV, Contacts, Interests Modals */
@@ -540,83 +452,6 @@ body {
 .about-text p, .cv-text p, .contacts-text p, .interests-text p {
   color: #ffffff;
   margin-bottom: 15px;
-}
-
-/* Contact Form Styles */
-.contacts-title {
-  font-size: 28px;
-  color: #ffffff;
-  margin-bottom: 40px;
-  text-align: center;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  line-height: 1.6;
-}
-
-.contact-form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.form-input,
-.form-textarea {
-  background: #1a1a1a;
-  border: 1px solid #333333;
-  color: #ffffff;
-  padding: 15px;
-  font-family: 'HeadingNow', sans-serif;
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-radius: 4px;
-  transition: all 0.3s ease;
-}
-
-.form-input::placeholder,
-.form-textarea::placeholder {
-  color: #666666;
-}
-
-.form-input:focus,
-.form-textarea:focus {
-  outline: none;
-  border-color: #ffbd46;
-  background: #0d0d0d;
-  box-shadow: 0 0 10px rgba(255, 189, 70, 0.3);
-}
-
-.form-textarea {
-  min-height: 150px;
-  resize: vertical;
-}
-
-.form-submit-btn {
-  background: #ffbd46;
-  color: #000000;
-  border: 2px solid #ffbd46;
-  padding: 14px 40px;
-  font-size: 14px;
-  font-weight: bold;
-  font-family: 'HeadingNow', sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: all 0.3s ease;
-  margin-top: 10px;
-}
-
-.form-submit-btn:hover {
-  background: transparent;
-  color: #ffbd46;
-  border-color: #ffbd46;
-}
-
-.form-submit-btn:active {
-  transform: scale(0.98);
 }
 
 /* ============================================
@@ -695,16 +530,6 @@ body {
 
 .cv-section {
   margin-bottom: 40px;
-}
-
-.cv-section-large {
-  font-size: 56px;
-  color: #ffbd46;
-  margin-bottom: 40px;
-  text-transform: uppercase;
-  letter-spacing: 3px;
-  font-weight: bold;
-  margin: 0 0 30px 0;
 }
 
 /* Section with Vertical Labels */

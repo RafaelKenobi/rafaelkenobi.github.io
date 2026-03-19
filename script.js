@@ -425,29 +425,51 @@ window.addEventListener('resize', () => {
 });
 
 // Enviar email via EmailJS
-const contactForm = document.getElementById('contactForm');
-if (contactForm) {
-  contactForm.addEventListener('submit', function(event) {
-    event.preventDefault();
-    
-    const visitorEmail = document.getElementById('visitor_email').value;
-    const subject = document.getElementById('subject').value;
-    const message = document.getElementById('message').value;
-    
-    // Enviar email usando EmailJS
-    emailjs.send('service_4a0kqfj', 'template_v4tsvqo', {
-      visitor_email: visitorEmail,
-      subject: subject,
-      message: message,
-      to_email: 'kan_sk8r@hotmail.com'
-    }).then(function(response) {
-      alert('✅ Email sent successfully!');
-      contactForm.reset();
-    }, function(error) {
-      alert('❌ Failed to send email. Please try again.');
-      console.log('FAILED...', error);
+// Aguarda o DOM estar pronto e EmailJS estar disponível
+function initContactForm() {
+  const contactForm = document.getElementById('contactForm');
+  console.log('ContactForm found:', contactForm);
+  console.log('EmailJS available:', typeof emailjs !== 'undefined');
+
+  if (contactForm && typeof emailjs !== 'undefined') {
+    contactForm.addEventListener('submit', function(event) {
+      event.preventDefault();
+      console.log('Form submitted!');
+      
+      const visitorEmail = document.getElementById('visitor_email').value;
+      const subject = document.getElementById('subject').value;
+      const message = document.getElementById('message').value;
+      
+      console.log('Form data:', { visitorEmail, subject, message });
+      console.log('Sending email...');
+      
+      emailjs.send('service_4a0kqfj', 'template_v4tsvqo', {
+        visitor_email: visitorEmail,
+        subject: subject,
+        message: message,
+        to_email: 'kan_sk8r@hotmail.com'
+      }).then(function(response) {
+        console.log('✅ Email sent! Response:', response);
+        alert('✅ Email sent successfully!');
+        contactForm.reset();
+      }, function(error) {
+        console.log('❌ FAILED... Error:', error);
+        alert('❌ Failed to send email. Please try again.\nError: ' + (error.text || error.message || JSON.stringify(error)));
+      });
     });
-  });
+  } else if (contactForm && typeof emailjs === 'undefined') {
+    console.error('EmailJS not available yet. Retrying...');
+    setTimeout(initContactForm, 100);
+  } else {
+    console.error('ContactForm element not found!');
+  }
+}
+
+// Inicializa quando o DOM está pronto
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initContactForm);
+} else {
+  initContactForm();
 }
 
 // Animações

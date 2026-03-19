@@ -431,9 +431,16 @@ function initContactForm() {
   console.log('ContactForm found:', contactForm);
   console.log('EmailJS available:', typeof emailjs !== 'undefined');
 
-  if (contactForm && typeof emailjs !== 'undefined') {
+  if (contactForm) {
     contactForm.addEventListener('submit', function(event) {
       event.preventDefault();
+      
+      if (typeof emailjs === 'undefined') {
+        alert('❌ EmailJS is not loaded. Please refresh the page.');
+        console.error('EmailJS not available');
+        return;
+      }
+      
       console.log('Form submitted!');
       
       const visitorEmail = document.getElementById('visitor_email').value;
@@ -441,7 +448,7 @@ function initContactForm() {
       const message = document.getElementById('message').value;
       
       console.log('Form data:', { visitorEmail, subject, message });
-      console.log('Sending email...');
+      console.log('Sending email via EmailJS...');
       
       emailjs.send('service_4a0kqfj', 'template_v4tsvqo', {
         visitor_email: visitorEmail,
@@ -457,9 +464,6 @@ function initContactForm() {
         alert('❌ Failed to send email. Please try again.\nError: ' + (error.text || error.message || JSON.stringify(error)));
       });
     });
-  } else if (contactForm && typeof emailjs === 'undefined') {
-    console.error('EmailJS not available yet. Retrying...');
-    setTimeout(initContactForm, 100);
   } else {
     console.error('ContactForm element not found!');
   }

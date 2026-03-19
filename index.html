@@ -24,6 +24,15 @@
     }
   }
   </script>
+  <!-- EmailJS - LOAD FIRST WITH DEFER -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/index.min.js" defer></script>
+  <script type="text/javascript" defer>
+    document.addEventListener('DOMContentLoaded', function() {
+      if (typeof emailjs !== 'undefined') {
+        emailjs.init('TCEWtIEZzqUuQiQ_A');
+      }
+    });
+  </script>
 </head>
 <body>
   <!-- Header -->
@@ -307,12 +316,6 @@
   <div id="pressHint" class="press-hint">
     <p>Press any planet</p>
   </div>
-
-  <!-- EmailJS -->
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/index.min.js"></script>
-  <script type="text/javascript">
-    emailjs.init('TCEWtIEZzqUuQiQ_A');
-  </script>
 
   <script type="module" src="script.js"></script>
 </body>

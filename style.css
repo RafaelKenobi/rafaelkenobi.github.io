@@ -355,7 +355,7 @@ body {
   }
 }
 
-/* Disasterpiece Modal */
+/* Projects Modal */
 .disasterpiece-modal {
   display: none;
   position: fixed;
@@ -670,6 +670,32 @@ body {
   line-height: 1.2;
 }
 
+/* Override grid layout for boxed sections */
+.projects-section.cv-section-vertical,
+.skills-section.cv-section-vertical,
+.work-section.cv-section-vertical,
+.studies-section.cv-section-vertical {
+  display: block;
+  background: #111111;
+  border: 2px solid #ffffff;
+  padding: 40px;
+  border-radius: 4px;
+  gap: 0;
+  align-items: inherit;
+  margin-bottom: 80px;
+}
+
+.projects-section .cv-section-label,
+.skills-section .cv-section-label,
+.work-section .cv-section-label,
+.studies-section .cv-section-label {
+  writing-mode: horizontal-tb;
+  transform: none;
+  font-size: 32px;
+  margin-bottom: 30px;
+  display: block;
+}
+
 /* Projects & Skills Side by Side */
 .cv-projects-skills-container {
   display: grid;
@@ -721,8 +747,6 @@ body {
   letter-spacing: 0.5px;
   line-height: 1.5;
 }
-
-/* Skills Content */
 .skills-content {
   display: flex;
   flex-direction: column;
@@ -751,8 +775,6 @@ body {
 .skill-item:hover {
   color: #ffbd46;
 }
-
-/* Work Content */
 .work-content {
   display: flex;
   flex-direction: column;
@@ -820,14 +842,26 @@ body {
     margin-bottom: 40px;
   }
 
+  /* Boxed sections on mobile */
+  .projects-section.cv-section-vertical,
+  .skills-section.cv-section-vertical,
+  .work-section.cv-section-vertical,
+  .studies-section.cv-section-vertical {
+    padding: 25px;
+  }
+
+  .projects-section .cv-section-label,
+  .skills-section .cv-section-label,
+  .work-section .cv-section-label,
+  .studies-section .cv-section-label {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
   .cv-projects-skills-container {
     grid-template-columns: 1fr;
     gap: 40px;
     margin-bottom: 40px;
-  }
-
-  .skills-section {
-    grid-column: 1;
   }
 
   .project-img {

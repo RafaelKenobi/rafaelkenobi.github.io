@@ -76,7 +76,7 @@ composer.addPass(renderPass);
 // Unreal Bloom Pass
 const bloomPass = new UnrealBloomPass(
   new THREE.Vector2(window.innerWidth, window.innerHeight),
-  0.2,   // strength
+  0.3,   // strength
   0.9,   // radius
   0.85   // threshold
 );
@@ -133,7 +133,7 @@ let originalCameraRotation = { x: 0, y: 0, z: 0 }; // Store initial camera rotat
 // Map short planet names to display labels
 const planetNameMap = {
   Cent: 'Portfolio',
-  fiz_1: 'Disasterpiece',
+  fiz_1: 'Projects',
   Uran_1: 'About',
   Fum: 'CV',
   Aros: 'Contacts',
@@ -674,10 +674,10 @@ DOM.closeButtons.portfolio.addEventListener('click', () => {
 });
 
 // ============================================
-// DISASTERPIECE MODAL
+// PROJECTS MODAL
 // ============================================
 
-// Open disasterpiece modal
+// Open projects modal
 DOM.links.disasterpiece.addEventListener('click', (event) => {
   event.preventDefault();
   
@@ -692,7 +692,7 @@ DOM.links.disasterpiece.addEventListener('click', (event) => {
   }
 });
 
-// Close disasterpiece modal
+// Close projects modal
 DOM.closeButtons.disasterpiece.addEventListener('click', () => {
   DOM.modals.disasterpiece.classList.remove('active');
   resetCamera();

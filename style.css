@@ -400,7 +400,7 @@ body {
 }
 
 /* About, CV, Contacts, Interests Modals */
-.about-modal, .cv-modal, .contacts-modal, .interests-modal {
+.about-modal, .cv-modal, .contacts-modal, .bio-modal {
   display: none;
   position: fixed;
   top: 0;
@@ -415,24 +415,24 @@ body {
   scroll-behavior: smooth;
 }
 
-.about-modal.active, .cv-modal.active, .contacts-modal.active, .interests-modal.active {
+.about-modal.active, .cv-modal.active, .contacts-modal.active, .bio-modal.active {
   display: block;
 }
 
-.about-content, .cv-content, .contacts-content, .interests-content {
+.about-content, .cv-content, .contacts-content, .bio-content {
   max-width: 1200px;
   margin: 0 auto;
   position: relative;
 }
 
-.about-content h2, .cv-content h2, .contacts-content h2, .interests-content h2 {
+.about-content h2, .cv-content h2, .contacts-content h2, .bio-content h2 {
   color: #ffffff;
   font-size: 32px;
   margin-bottom: 30px;
   text-align: center;
 }
 
-.about-text, .cv-text, .interests-text {
+.about-text, .cv-text, .bio-text {
   color: #cccccc;
   font-size: 16px;
   line-height: 1.8;
@@ -528,11 +528,45 @@ body {
   font-size: 13px;
 }
 
+/* Bio Modal Specific Styles */
+.bio-title {
+  color: #ffbd46;
+  font-size: 24px;
+  margin-bottom: 30px;
+  text-align: center;
+  font-weight: bold;
+  letter-spacing: 1px;
+  line-height: 1.6;
+}
+
+.bio-description {
+  margin-bottom: 30px;
+}
+
+.bio-description p {
+  color: #cccccc;
+  font-size: 15px;
+  line-height: 1.8;
+  margin-bottom: 15px;
+  text-align: justify;
+}
+
+.bio-contact {
+  display: flex;
+  justify-content: center;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.bio-contact .contact-btn {
+  max-width: 400px;
+}
+
 .cv-text {
   min-height: 400px;
 }
 
-.about-text p, .cv-text p, .contacts-text p, .interests-text p {
+.about-text p, .cv-text p, .contacts-text p, .bio-text p {
   color: #ffffff;
   margin-bottom: 15px;
 }

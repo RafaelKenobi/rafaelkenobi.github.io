@@ -137,7 +137,7 @@ const planetNameMap = {
   Uran_1: 'About',
   Fum: 'CV',
   Aros: 'Contacts',
-  Nept: 'My Interests'
+  Nept: 'Bio'
 };
 
 // CONFIG
@@ -170,7 +170,7 @@ const DOM = {
     about: document.getElementById('aboutModal'),
     cv: document.getElementById('cvModal'),
     contacts: document.getElementById('contactsModal'),
-    interests: document.getElementById('interestsModal')
+    bio: document.getElementById('bioModal')
   },
   closeButtons: {
     portfolio: document.getElementById('closePortfolio'),
@@ -178,7 +178,7 @@ const DOM = {
     about: document.getElementById('closeAbout'),
     cv: document.getElementById('closeCV'),
     contacts: document.getElementById('closeContacts'),
-    interests: document.getElementById('closeInterests')
+    bio: document.getElementById('closeBio')
   },
   links: {
     portfolio: document.querySelector('a[href="#portfolio"]'),
@@ -186,7 +186,7 @@ const DOM = {
     about: document.querySelector('a[href="#about"]'),
     cv: document.querySelector('a[href="#cv"]'),
     contacts: document.querySelector('a[href="#contacts"]'),
-    interests: document.querySelector('a[href="#interests"]')
+    bio: document.querySelector('a[href="#bio"]')
   }
 };
 
@@ -269,7 +269,7 @@ document.addEventListener('click', (event) => {
       } else if (clickedPlaneta.name === 'Aros') {
         zoomToPlaneta(clickedPlaneta, DOM.modals.contacts);
       } else if (clickedPlaneta.name === 'Nept') {
-        zoomToPlaneta(clickedPlaneta, DOM.modals.interests);
+        zoomToPlaneta(clickedPlaneta, DOM.modals.bio);
       }
     }
   }
@@ -771,26 +771,26 @@ DOM.closeButtons.contacts.addEventListener('click', () => {
 });
 
 // ============================================
-// INTERESTS MODAL
+// BIO MODAL
 // ============================================
 
-// Open interests modal
-DOM.links.interests.addEventListener('click', (event) => {
+// Open bio modal
+DOM.links.bio.addEventListener('click', (event) => {
   event.preventDefault();
   
   // Find planet "Nept"
   const neptPlaneta = planetas.find(p => p.name === 'Nept');
   if (neptPlaneta) {
-    zoomToPlaneta(neptPlaneta, DOM.modals.interests);
+    zoomToPlaneta(neptPlaneta, DOM.modals.bio);
   } else {
-    DOM.modals.interests.classList.add('active');
+    DOM.modals.bio.classList.add('active');
     DOM.menuDropdown.classList.remove('active');
   }
 });
 
-// Close interests modal
-DOM.closeButtons.interests.addEventListener('click', () => {
-  DOM.modals.interests.classList.remove('active');
+// Close bio modal
+DOM.closeButtons.bio.addEventListener('click', () => {
+  DOM.modals.bio.classList.remove('active');
   resetCamera();
 });
 

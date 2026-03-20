@@ -1,11 +1,15 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 
-// Cena
+// THREE Scene
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x000000);
 
-// Câmara
+// Camera setup
 const camera = new THREE.PerspectiveCamera(
   75,
   window.innerWidth / window.innerHeight,
@@ -14,7 +18,7 @@ const camera = new THREE.PerspectiveCamera(
 );
 camera.position.set(0, 1.6, 2.8);
 
-// Guardar estado inicial da câmara
+// Store initial camera state and show hint after 3 seconds
 window.addEventListener('load', () => {
   originalCameraRotation = {
     x: camera.rotation.x,
@@ -22,7 +26,7 @@ window.addEventListener('load', () => {
     z: camera.rotation.z
   };
   
-  // Iniciar timer para mostrar "Press any planet" hint após 3 segundos
+  // Show hint after HINT_DELAY milliseconds if user hasn't interacted
   hintTimeout = setTimeout(() => {
     if (!hasUserInteracted && DOM.pressHint) {
       DOM.pressHint.classList.add('show');
@@ -30,13 +34,83 @@ window.addEventListener('load', () => {
   }, CONFIG.HINT_DELAY);
 });
 
-// Renderer
+// WebGL Renderer
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(window.devicePixelRatio);
 document.body.appendChild(renderer.domElement);
 
-// Luzes
+// Chromatic Aberration Shader
+const chromaticAberrationShader = {
+  uniforms: {
+    'tDiffuse': { value: null },
+    'aberration': { value: 0.005 }
+  },
+  vertexShader: `
+    varying vec2 vUv;
+    void main() {
+      vUv = uv;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `,
+  fragmentShader: `
+    uniform sampler2D tDiffuse;
+    uniform float aberration;
+    varying vec2 vUv;
+    
+    void main() {
+      vec2 offset = aberration * (vUv - 0.5);
+      float r = texture2D(tDiffuse, vUv + offset).r;
+      float g = texture2D(tDiffuse, vUv).g;
+      float b = texture2D(tDiffuse, vUv - offset).b;
+      gl_FragColor = vec4(r, g, b, 1.0);
+    }
+  `
+};
+
+// Post-Processing Setup
+const composer = new EffectComposer(renderer);
+const renderPass = new RenderPass(scene, camera);
+composer.addPass(renderPass);
+
+// Unreal Bloom Pass
+const bloomPass = new UnrealBloomPass(
+  new THREE.Vector2(window.innerWidth, window.innerHeight),
+  0.2,   // strength
+  0.9,   // radius
+  0.85   // threshold
+);
+composer.addPass(bloomPass);
+
+// Chromatic Aberration Pass
+const chromaticPass = new ShaderPass(chromaticAberrationShader);
+composer.addPass(chromaticPass);
+
+// Post-Processing Configuration (easy to adjust)
+const postProcessing = {
+  bloom: {
+    strength: 1.5,
+    radius: 0.4,
+    threshold: 0.85
+  },
+  chromatic: {
+    aberration: 0.003
+  }
+};
+
+// Function to update bloom strength
+function setBloomStrength(strength) {
+  postProcessing.bloom.strength = strength;
+  bloomPass.strength = strength;
+}
+
+// Function to update chromatic aberration
+function setChromaticAberration(value) {
+  postProcessing.chromatic.aberration = value;
+  chromaticPass.uniforms.aberration.value = value;
+}
+
+// Lighting setup
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
 scene.add(ambientLight);
 
@@ -44,19 +118,19 @@ const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 directionalLight.position.set(5, 10, 5);
 scene.add(directionalLight);
 
-// Animações
+// Animation mixer
 let mixer = null;
 const clock = new THREE.Clock();
 
-// Posição do rato e controles
+// Mouse position and game objects
 const mouse = { x: 0, y: 0 };
 let planetas = [];
 let isZooming = false;
 let zoomTarget = null;
 let originalCameraPos = { x: 0, y: 1.6, z: 2.8 };
-let originalCameraRotation = { x: 0, y: 0, z: 0 }; // Guardar rotação inicial
+let originalCameraRotation = { x: 0, y: 0, z: 0 }; // Store initial camera rotation
 
-// Mapa de nomes visíveis para cada planeta
+// Map short planet names to display labels
 const planetNameMap = {
   Cent: 'Portfolio',
   fiz_1: 'Disasterpiece',
@@ -78,9 +152,9 @@ const CONFIG = {
 // Estado
 let hasUserInteracted = false;
 let hintTimeout = null;
-let hasMouseMoved = false; // Flag para só fazer raycasting após movimento de rato
+let hasMouseMoved = false; // Only raycasting after first mouse move
 
-// Elementos DOM cacheados
+// Cached DOM elements
 const DOM = {
   tooltip: document.getElementById('planetaTooltip'),
   pressHint: document.getElementById('pressHint'),
@@ -119,7 +193,7 @@ const DOM = {
 // Raycasting
 const raycaster = new THREE.Raycaster();
 
-// Converte a posição de um objeto 3D para coordenadas de ecrã (pixels)
+// Convert 3D object position to screen coordinates (pixels)
 function toScreenPosition(obj, camera) {
   const vector = new THREE.Vector3();
   const widthHalf = 0.5 * renderer.domElement.clientWidth;
@@ -132,14 +206,14 @@ function toScreenPosition(obj, camera) {
   return { x: vector.x, y: vector.y };
 }
 
-// Listener do rato - movimento
+// Mouse movement listener
 document.addEventListener('mousemove', (event) => {
   hasMouseMoved = true;
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 });
 
-// Suporte a toque para mobile (atualiza as coordenadas como se fosse o rato)
+// Mobile touch support - update coordinates like mouse movement
 document.addEventListener('touchmove', (event) => {
   hasMouseMoved = true;
   if (event.touches && event.touches[0]) {
@@ -149,7 +223,7 @@ document.addEventListener('touchmove', (event) => {
   }
 });
 
-// opcional: também atualiza no touchstart para mostrar tooltip imediatamente
+// Update coordinates on touch start for immediate tooltip display
 document.addEventListener('touchstart', (event) => {
   hasMouseMoved = true;
   if (event.touches && event.touches[0]) {
@@ -159,25 +233,26 @@ document.addEventListener('touchstart', (event) => {
   }
 });
 
-// Listener do rato - click
+// Click listener for planet interaction
 document.addEventListener('click', (event) => {
-  // Se estiver a fazer zoom, não fazer nada
+  // Skip if already zooming
   if (isZooming) return;
   
-  // Ignorar clicks em elementos UI
+  // Ignore clicks on UI elements
   if (event.target.closest('.header') || event.target.closest('.music-player') || event.target.closest('.portfolio-modal') || event.target.closest('.disasterpiece-modal') || event.target.closest('.about-modal') || event.target.closest('.cv-modal') || event.target.closest('.contacts-modal') || event.target.closest('.interests-modal')) return;
   
   raycaster.setFromCamera(mouse, camera);
   const intersects = raycaster.intersectObjects(planetas, true);
   
   if (intersects.length > 0) {
-    // Marcar interação do utilizador
+    // Mark user interaction
     hasUserInteracted = true;
     if (hintTimeout) clearTimeout(hintTimeout);
     const pressHint = document.getElementById('pressHint');
     if (pressHint) pressHint.classList.remove('show');
     
     let clickedPlaneta = intersects[0].object;
+    // Find the actual planet object in the hierarchy
     while (clickedPlaneta && !planetas.includes(clickedPlaneta)) {
       clickedPlaneta = clickedPlaneta.parent;
     }
@@ -200,14 +275,14 @@ document.addEventListener('click', (event) => {
   }
 });
 
-// Função para fazer zoom a um planeta
+// Zoom camera to a planet and open its modal
 function zoomToPlaneta(planeta, modalElement = null) {
   const menuDropdown = document.getElementById('menuDropdown');
   
   isZooming = true;
   zoomTarget = planeta;
   
-  // Fechar menu se estiver aberto
+  // Close menu if open
   DOM.menuDropdown.classList.remove('active');
   
   const duration = CONFIG.ZOOM_DURATION;
@@ -222,31 +297,31 @@ function zoomToPlaneta(planeta, modalElement = null) {
     const elapsed = Date.now() - startTime;
     const progress = Math.min(elapsed / duration, 1);
     
-    // Easing function (ease-out)
+    // Ease-out function for smooth animation
     const easeProgress = 1 - Math.pow(1 - progress, 3);
     
-    // Calcular posição atual do planeta (atualizado em cada frame)
+    // Get current planet position (updates each frame with animations)
     const currentPlanetaPos = new THREE.Vector3();
     planeta.getWorldPosition(currentPlanetaPos);
     
-    // Calcular posição-alvo relativa ao planeta
+    // Calculate target position relative to planet
     const targetPos = new THREE.Vector3();
     targetPos.copy(currentPlanetaPos);
     targetPos.z += 0.3;
     targetPos.y += 0.0;
     
-    // Interpolar entre a posição inicial e a posição-alvo do planeta
+    // Interpolate between start and target position
     camera.position.x = startPos.x + (targetPos.x - startPos.x) * easeProgress;
     camera.position.y = startPos.y + (targetPos.y - startPos.y) * easeProgress;
     camera.position.z = startPos.z + (targetPos.z - startPos.z) * easeProgress;
     
-    // Fazer a câmara olhar para o planeta
+    // Make camera look at the planet
     camera.lookAt(currentPlanetaPos);
     
     if (progress < 1) {
       requestAnimationFrame(animateZoom);
     } else {
-      // Abrir modal após a animação estar completa
+      // Open modal after animation completes
       if (modalElement) {
         modalElement.classList.add('active');
       }
@@ -257,7 +332,7 @@ function zoomToPlaneta(planeta, modalElement = null) {
   animateZoom();
 }
 
-// Função para voltar à câmara original
+// Reset camera to original position
 function resetCamera() {
   isZooming = true;
   const duration = CONFIG.RESET_DURATION;
@@ -282,12 +357,12 @@ function resetCamera() {
     
     const easeProgress = 1 - Math.pow(1 - progress, 3);
     
-    // Animar posição
+    // Animate position
     camera.position.x = startPos.x + (targetPos.x - startPos.x) * easeProgress;
     camera.position.y = startPos.y + (targetPos.y - startPos.y) * easeProgress;
     camera.position.z = startPos.z + (targetPos.z - startPos.z) * easeProgress;
     
-    // Animar rotação
+    // Animate rotation
     camera.rotation.x = startRot.x + (targetRot.x - startRot.x) * easeProgress;
     camera.rotation.y = startRot.y + (targetRot.y - startRot.y) * easeProgress;
     camera.rotation.z = startRot.z + (targetRot.z - startRot.z) * easeProgress;
@@ -296,21 +371,21 @@ function resetCamera() {
       requestAnimationFrame(animateReset);
     } else {
       isZooming = false;
-      zoomTarget = null; // Limpar zoom target para que a câmara volte ao normal
+      zoomTarget = null; // Clear zoom target so camera returns to normal
     }
   };
   
   animateReset();
 }
 
-// Loader
+// GLTF Model Loader
 const loader = new GLTFLoader();
 
 loader.load('meuAmbiente.glb', (gltf) => {
   const model = gltf.scene;
   scene.add(model);
   
-  // Encontrar os planetas
+  // Find all planet objects in the model
   model.traverse((child) => {
     const planetasNomes = ['Aros', 'Cent', 'fiz_1', 'Fum', 'Nept', 'Uran_1'];
     if (planetasNomes.includes(child.name)) {
@@ -318,7 +393,7 @@ loader.load('meuAmbiente.glb', (gltf) => {
     }
   });
   
-  // Iniciar animações
+  // Start animations
   if (gltf.animations && gltf.animations.length > 0) {
     mixer = new THREE.AnimationMixer(model);
     gltf.animations.forEach((clip) => {
@@ -327,7 +402,7 @@ loader.load('meuAmbiente.glb', (gltf) => {
   }
 });
 
-// Animação
+// Main animation loop
 function animate() {
   requestAnimationFrame(animate);
   
@@ -335,19 +410,19 @@ function animate() {
     mixer.update(clock.getDelta());
   }
   
-  // Fazer raycasting para detectar qual planeta está sob o rato
+  // Raycasting to detect which planet is under the cursor
   if (planetas.length > 0 && hasMouseMoved) {
     raycaster.setFromCamera(mouse, camera);
     const intersects = raycaster.intersectObjects(planetas, true);
     
     if (intersects.length > 0) {
-      // Encontra qual planeta foi intersectado
+      // Find which planet was intersected
       let hoveredPlaneta = intersects[0].object;
       while (hoveredPlaneta && !planetas.includes(hoveredPlaneta)) {
         hoveredPlaneta = hoveredPlaneta.parent;
       }
       
-      // Atualizar o tooltip HTML
+      // Update tooltip display
       const isMenuOpen = DOM.menuDropdown.classList.contains('active');
       const modals = Object.values(DOM.modals);
       const isAnyModalOpen = modals.some(m => m && m.classList.contains('active'));
@@ -369,12 +444,12 @@ function animate() {
     }
   }
   
-  // Manter câmara focada no planeta quando modal está ativo
+  // Keep camera focused on planet while modal is active
   if (!isZooming && zoomTarget) {
     const isAnyModalActive = Object.values(DOM.modals).some(m => m && m.classList.contains('active'));
     
     if (isAnyModalActive) {
-      // Manter câmara a seguir o planeta
+      // Keep camera following the planet
       const targetPlanetaPos = new THREE.Vector3();
       zoomTarget.getWorldPosition(targetPlanetaPos);
       
@@ -383,36 +458,37 @@ function animate() {
       cameraTarget.z += 0.3;
       cameraTarget.y += 0.0;
       
-      // Interpolação suave mantendo a câmara próxima ao planeta
+      // Smooth interpolation keeping camera close to planet
       camera.position.x += (cameraTarget.x - camera.position.x) * CONFIG.CAMERA_FOLLOW_SPEED;
       camera.position.y += (cameraTarget.y - camera.position.y) * CONFIG.CAMERA_FOLLOW_SPEED;
       camera.position.z += (cameraTarget.z - camera.position.z) * CONFIG.CAMERA_FOLLOW_SPEED;
       
-      // Fazer câmara olhar para o planeta
+      // Make camera look at the planet
       camera.lookAt(targetPlanetaPos);
     }
   }
   
-  renderer.render(scene, camera);
+  // Render with post-processing effects
+  composer.render();
 }
 
-// Resize
+// Window resize handler
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
+  composer.setSize(window.innerWidth, window.innerHeight);
 });
 
-// Animações
-
+// Music Player Variables
 let musicList = [];
 let currentTrackIndex = 0;
 let isPlaying = false;
 
-// Carregar lista de músicas da pasta musica
+// Load music list from playlist.json
 async function loadMusicList() {
   try {
-    // Carrega o ficheiro playlist.json
+    // Fetch playlist.json file
     const response = await fetch('musica/playlist.json');
     
     if (response.ok) {
@@ -420,14 +496,14 @@ async function loadMusicList() {
       musicList = data.playlist || [];
     }
   } catch (error) {
-    // Erro silencioso - não carregar playlist
+    // Silent fail - no playlist loaded
   }
 }
 
-// Variável para verificar se autoplay já foi iniciado
+// Variable to track if autoplay has been attempted
 let autoplayAttempted = false;
 
-// Inicializar player
+// Initialize music player
 async function initMusicPlayer() {
   await loadMusicList();
   
@@ -436,11 +512,11 @@ async function initMusicPlayer() {
     loadTrack(currentTrackIndex);
     attemptAutoplay();
   } else {
-    DOM.trackName.textContent = 'Nenhuma música encontrada na pasta musica/';
+    DOM.trackName.textContent = 'No music found in musica/ folder';
   }
 }
 
-// Função para tentar autoplay
+// Attempt autoplay on page load
 function attemptAutoplay() {
   if (autoplayAttempted) return;
   
@@ -450,13 +526,13 @@ function attemptAutoplay() {
       updatePlayPauseIcon();
     })
     .catch(() => {
-      // Autoplay bloqueado - aguardar primeira interação
+      // Autoplay blocked - wait for first user interaction
       document.addEventListener('click', resumeAudio, { once: true });
       document.addEventListener('touchstart', resumeAudio, { once: true });
     });
 }
 
-// Tentar play quando utilizador interage
+// Resume audio on first user interaction
 function resumeAudio() {
   if (!autoplayAttempted) {
     DOM.audio.play()
@@ -468,7 +544,7 @@ function resumeAudio() {
   }
 }
 
-// Carregar faixa
+// Load track by index
 function loadTrack(index) {
   if (musicList.length === 0) return;
   
@@ -478,13 +554,13 @@ function loadTrack(index) {
   const trackNameDisplay = musicList[currentTrackIndex]
     .split('/')
     .pop()
-    .replace(/\.[^/.]+$/, ''); // Remove extensão
+    .replace(/\.[^/.]+$/, ''); // Remove file extension
   
   DOM.trackName.textContent = '' + trackNameDisplay;
   updatePlayPauseIcon();
 }
 
-// Play/Pause
+// Toggle play/pause
 function togglePlayPause() {
   if (musicList.length === 0) return;
   
@@ -499,27 +575,27 @@ function togglePlayPause() {
   updatePlayPauseIcon();
 }
 
-// Próxima música
+// Load next track and auto-play
 function playNext() {
   if (musicList.length === 0) return;
   
   currentTrackIndex = (currentTrackIndex + 1) % musicList.length;
   loadTrack(currentTrackIndex);
   
-  // Sempre tocar a próxima música
+  // Always play next track
   DOM.audio.play()
     .then(() => {
       isPlaying = true;
       updatePlayPauseIcon();
     })
     .catch(() => {
-      // Se falhar, aguardar primeira interação
+      // If auto-play fails, wait for user interaction
       document.addEventListener('click', resumeAudio, { once: true });
       document.addEventListener('touchstart', resumeAudio, { once: true });
     });
 }
 
-// Atualizar ícone play/pause
+// Update play/pause button icon
 function updatePlayPauseIcon() {
   if (DOM.audio.paused) {
     DOM.playPauseBtn.querySelector('.icon').textContent = '▶️';
@@ -530,7 +606,7 @@ function updatePlayPauseIcon() {
   }
 }
 
-// Auto-play quando acaba a música
+// Auto-play next track when current finishes
 DOM.audio.addEventListener('ended', () => {
   playNext();
   setTimeout(() => DOM.audio.play(), 100);
@@ -539,7 +615,7 @@ DOM.audio.addEventListener('ended', () => {
 DOM.playPauseBtn.addEventListener('click', togglePlayPause);
 DOM.nextBtn.addEventListener('click', playNext);
 
-// Iniciar player quando o documento carrega
+// Initialize music player on page load
 document.addEventListener('DOMContentLoaded', () => {
   initMusicPlayer();
 });
@@ -548,9 +624,9 @@ document.addEventListener('DOMContentLoaded', () => {
 // MENU HEADER
 // ============================================
 
-// Toggle menu ao clicar no botão
+// Toggle menu on button click
 DOM.menuToggle.addEventListener('click', () => {
-  // Marcar interação do utilizador
+  // Mark user interaction
   hasUserInteracted = true;
   if (hintTimeout) clearTimeout(hintTimeout);
   if (DOM.pressHint) DOM.pressHint.classList.remove('show');
@@ -558,14 +634,14 @@ DOM.menuToggle.addEventListener('click', () => {
   DOM.menuDropdown.classList.toggle('active');
 });
 
-// Fechar menu ao clicar num item
+// Close menu when clicking menu item
 document.querySelectorAll('.menu-item').forEach(item => {
   item.addEventListener('click', () => {
     DOM.menuDropdown.classList.remove('active');
   });
 });
 
-// Fechar menu ao clicar fora
+// Close menu when clicking outside
 document.addEventListener('click', (event) => {
   if (!event.target.closest('.header')) {
     DOM.menuDropdown.classList.remove('active');
@@ -576,22 +652,22 @@ document.addEventListener('click', (event) => {
 // PORTFOLIO MODAL
 // ============================================
 
-// Abrir portfolio ao clicar no link
+// Open portfolio modal
 DOM.links.portfolio.addEventListener('click', (event) => {
   event.preventDefault();
   
-  // Encontrar o planeta "Cent"
+  // Find planet "Cent"
   const centPlaneta = planetas.find(p => p.name === 'Cent');
   if (centPlaneta) {
     zoomToPlaneta(centPlaneta, DOM.modals.portfolio);
   } else {
-    // Se não encontrar, apenas abrir o portfolio
+    // If not found, just open portfolio
     DOM.modals.portfolio.classList.add('active');
     DOM.menuDropdown.classList.remove('active');
   }
 });
 
-// Fechar portfolio ao clicar no botão X
+// Close portfolio modal
 DOM.closeButtons.portfolio.addEventListener('click', () => {
   DOM.modals.portfolio.classList.remove('active');
   resetCamera();
@@ -601,22 +677,22 @@ DOM.closeButtons.portfolio.addEventListener('click', () => {
 // DISASTERPIECE MODAL
 // ============================================
 
-// Abrir disasterpiece ao clicar no link
+// Open disasterpiece modal
 DOM.links.disasterpiece.addEventListener('click', (event) => {
   event.preventDefault();
   
-  // Encontrar o planeta "fiz_1"
+  // Find planet "fiz_1"
   const fiz1Planeta = planetas.find(p => p.name === 'fiz_1');
   if (fiz1Planeta) {
     zoomToPlaneta(fiz1Planeta, DOM.modals.disasterpiece);
   } else {
-    // Se não encontrar, apenas abrir o modal
+    // If not found, just open modal
     DOM.modals.disasterpiece.classList.add('active');
     DOM.menuDropdown.classList.remove('active');
   }
 });
 
-// Fechar disasterpiece ao clicar no botão X
+// Close disasterpiece modal
 DOM.closeButtons.disasterpiece.addEventListener('click', () => {
   DOM.modals.disasterpiece.classList.remove('active');
   resetCamera();
@@ -626,11 +702,11 @@ DOM.closeButtons.disasterpiece.addEventListener('click', () => {
 // ABOUT MODAL
 // ============================================
 
-// Abrir about ao clicar no link
+// Open about modal
 DOM.links.about.addEventListener('click', (event) => {
   event.preventDefault();
   
-  // Encontrar o planeta "Uran_1"
+  // Find planet "Uran_1"
   const uran1Planeta = planetas.find(p => p.name === 'Uran_1');
   if (uran1Planeta) {
     zoomToPlaneta(uran1Planeta, DOM.modals.about);
@@ -640,7 +716,7 @@ DOM.links.about.addEventListener('click', (event) => {
   }
 });
 
-// Fechar about ao clicar no botão X
+// Close about modal
 DOM.closeButtons.about.addEventListener('click', () => {
   DOM.modals.about.classList.remove('active');
   resetCamera();
@@ -650,11 +726,11 @@ DOM.closeButtons.about.addEventListener('click', () => {
 // CV MODAL
 // ============================================
 
-// Abrir CV ao clicar no link
+// Open CV modal
 DOM.links.cv.addEventListener('click', (event) => {
   event.preventDefault();
   
-  // Encontrar o planeta "Fum"
+  // Find planet "Fum"
   const fumPlaneta = planetas.find(p => p.name === 'Fum');
   if (fumPlaneta) {
     zoomToPlaneta(fumPlaneta, DOM.modals.cv);
@@ -664,7 +740,7 @@ DOM.links.cv.addEventListener('click', (event) => {
   }
 });
 
-// Fechar CV ao clicar no botão X
+// Close CV modal
 DOM.closeButtons.cv.addEventListener('click', () => {
   DOM.modals.cv.classList.remove('active');
   resetCamera();
@@ -674,11 +750,11 @@ DOM.closeButtons.cv.addEventListener('click', () => {
 // CONTACTS MODAL
 // ============================================
 
-// Abrir contacts ao clicar no link
+// Open contacts modal
 DOM.links.contacts.addEventListener('click', (event) => {
   event.preventDefault();
   
-  // Encontrar o planeta "Aros"
+  // Find planet "Aros"
   const arosPlaneta = planetas.find(p => p.name === 'Aros');
   if (arosPlaneta) {
     zoomToPlaneta(arosPlaneta, DOM.modals.contacts);
@@ -688,7 +764,7 @@ DOM.links.contacts.addEventListener('click', (event) => {
   }
 });
 
-// Fechar contacts ao clicar no botão X
+// Close contacts modal
 DOM.closeButtons.contacts.addEventListener('click', () => {
   DOM.modals.contacts.classList.remove('active');
   resetCamera();
@@ -698,11 +774,11 @@ DOM.closeButtons.contacts.addEventListener('click', () => {
 // INTERESTS MODAL
 // ============================================
 
-// Abrir interests ao clicar no link
+// Open interests modal
 DOM.links.interests.addEventListener('click', (event) => {
   event.preventDefault();
   
-  // Encontrar o planeta "Nept"
+  // Find planet "Nept"
   const neptPlaneta = planetas.find(p => p.name === 'Nept');
   if (neptPlaneta) {
     zoomToPlaneta(neptPlaneta, DOM.modals.interests);
@@ -712,10 +788,11 @@ DOM.links.interests.addEventListener('click', (event) => {
   }
 });
 
-// Fechar interests ao clicar no botão X
+// Close interests modal
 DOM.closeButtons.interests.addEventListener('click', () => {
   DOM.modals.interests.classList.remove('active');
   resetCamera();
 });
+
 
 animate();

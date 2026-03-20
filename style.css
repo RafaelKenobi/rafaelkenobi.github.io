@@ -244,7 +244,7 @@ body {
     margin-top: 10px;
   }
 }
-/* Player de Música */
+/* Music Player */
 .music-player {
   position: fixed;
   bottom: 0;
@@ -297,12 +297,12 @@ body {
   opacity: 0.9;
 }
 
-/* Tooltip dos planetas */
+/* Tooltip planets */
 .tooltip {
   position: absolute;
   padding: 4px 8px;
   background: rgba(0, 0, 0, 0.7);
-  color: #ffbd46;
+  color: #ffffff;
   font-size: 0.9rem;
   border-radius: 4px;
   pointer-events: none;

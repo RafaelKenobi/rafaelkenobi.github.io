@@ -432,7 +432,7 @@ body {
   text-align: center;
 }
 
-.about-text, .cv-text, .contacts-text, .interests-text {
+.about-text, .cv-text, .interests-text {
   color: #cccccc;
   font-size: 16px;
   line-height: 1.8;
@@ -443,6 +443,89 @@ body {
   max-height: calc(100vh - 180px);
   overflow-y: auto;
   scroll-behavior: smooth;
+}
+
+/* Contacts Grid Layout */
+.contacts-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  max-height: none;
+  overflow: visible;
+}
+
+.contact-card {
+  background: #000000;
+  border: 2px solid #ffffff;
+  padding: 30px 20px;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  transition: all 0.3s ease;
+}
+
+.contact-card:hover {
+  background: #1a1a1a;
+  border-color: #ffbd46;
+  transform: translateY(-5px);
+}
+
+.contact-card h3 {
+  color: #ffffff;
+  font-size: 18px;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: bold;
+}
+
+.contact-btn {
+  display: block;
+  background: #ffbd46;
+  color: #000000;
+  padding: 12px 20px;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: 2px solid #ffbd46;
+  font-family: 'HeadingNow', sans-serif;
+  text-align: center;
+  width: 100%;
+}
+
+.contact-btn:hover:not(:disabled) {
+  background: transparent;
+  color: #ffbd46;
+  border-color: #ffbd46;
+}
+
+.contact-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.contact-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: #666666;
+  border-color: #666666;
+  color: #999999;
+}
+
+.email-btn {
+  white-space: normal;
+  word-break: break-word;
+  font-size: 13px;
 }
 
 .cv-text {
@@ -745,5 +828,35 @@ body {
 
   .cv-entry-item li {
     font-size: 10px;
+  }
+
+  /* Contacts responsive */
+  .contacts-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+  }
+
+  .contact-card {
+    padding: 20px 15px;
+  }
+
+  .contact-card h3 {
+    font-size: 16px;
+  }
+
+  .contact-btn {
+    padding: 10px 16px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .contacts-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .contact-card {
+    padding: 20px 15px;
   }
 }

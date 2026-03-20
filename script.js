@@ -44,7 +44,7 @@ document.body.appendChild(renderer.domElement);
 const chromaticAberrationShader = {
   uniforms: {
     'tDiffuse': { value: null },
-    'aberration': { value: 0.005 }
+    'aberration': { value: 0.004 }
   },
   vertexShader: `
     varying vec2 vUv;

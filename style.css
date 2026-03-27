@@ -539,9 +539,8 @@ body {
   border: 2px solid #ffffff;
   padding: 30px;
   border-radius: 4px;
-  max-height: calc(100vh - 180px);
-  overflow-y: auto;
-  scroll-behavior: smooth;
+  max-height: none;
+  overflow: visible;
 }
 
 /* Contacts Grid Layout */
@@ -940,6 +939,7 @@ body {
   grid-template-columns: 1fr;
   gap: 30px;
   margin-top: 30px;
+  margin-bottom: 40px;
 }
 
 .cv-projects-grid-4col .cv-project-card {

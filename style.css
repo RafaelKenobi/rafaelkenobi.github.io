@@ -445,6 +445,17 @@ body {
   transform: translateY(-5px);
 }
 
+.project-image {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  display: block;
+  background: #222222;
+  border: 1px solid #666666;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
 .project-image-placeholder {
   width: 100%;
   aspect-ratio: 16 / 9;

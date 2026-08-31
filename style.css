@@ -366,6 +366,7 @@ body {
   background: rgba(0, 0, 0, 0.9);
   z-index: 2000;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 60px 20px 40px 20px;
 }
 
@@ -374,6 +375,7 @@ body {
 }
 
 .disasterpiece-content {
+  width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   position: relative;
@@ -419,7 +421,7 @@ body {
 /* Projects Grid Layout */
 .projects-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 20px;
   padding: 0;
   border: none;
@@ -437,6 +439,7 @@ body {
   flex-direction: column;
   gap: 15px;
   transition: all 0.3s ease;
+  min-width: 0;
 }
 
 .project-card:hover {
@@ -447,6 +450,7 @@ body {
 
 .project-image {
   width: 100%;
+  max-width: 100%;
   aspect-ratio: 16 / 9;
   object-fit: cover;
   display: block;
